@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login - Minecraft Announcer</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="container">
+  <!-- Top-left title with slashing effect on "Announcer" -->
+  <div class="top-left-title">
+    Minecraft <span class="slash">Announcer</span>
+  </div>
+
+  <!-- Centered login title -->
+  <h1 class="login-title">Login</h1>
+
+  <!-- Login form -->
+  <form id="loginForm">
+    <input type="text" id="discordId" placeholder="Enter your Discord ID" required>
+    <button type="submit">Login</button>
+  </form>
+
+  <!-- Bottom-left credits -->
+  <div class="footer-left">
+    Toka's <span class="slash">Creation</span>
+  </div>
+</div>
+
+<script>
+const form = document.getElementById("loginForm");
+
+form.addEventListener("submit", async e => {
+  e.preventDefault();
+  const discordId = document.getElementById("discordId").value;
+
+  try {
+    const res = await fetch("/.netlify/functions/check-whitelist", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({discordId})
+    });
+
+    const data = await res.json();
+
+    if (data.allowed) {
+      localStorage.setItem("discordId", discordId);
+      localStorage.setItem("discordUsername", data.username);
+      window.location.href = "/command-center.html";
+    } else {
+      alert("Your Discord ID is not whitelisted.");
+    }
+  } catch (err) {
+    console.error(err);
+    alert("Error checking whitelist.");
+  }
+});
+</script>
+</body>
+</html>

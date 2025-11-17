@@ -1,0 +1,64 @@
+const WEBHOOK_URL = "https://discord.com/api/webhooks/1434522950404407307/xMeCEonmw4Chm357er5EAH9hjS6VwSgy79xmAQwDyEm6_wkE_rkoBjzIer36CaPb0IG8";
+const roleId = "1434522137498095757"; // @Minecrafter role
+
+export async function handler(event) {
+  if (event.httpMethod !== "POST") {
+    return { statusCode: 405, body: "Method Not Allowed" };
+  }
+
+  const { message } = JSON.parse(event.body || "{}");
+
+  if (!message) {
+    return { statusCode: 400, body: "Message required" };
+  }
+
+  try {
+    const payload = {
+      content: `<@&${roleId}>`, // role ping
+      embeds: [
+        {
+          title: "🌸🌷  ｍｉｎｅｃｒａｆｔ  ｕｐｄａｔｅ • 🌷🌸",
+          color: 0xf8bbd0,
+          description:
+            "╭──────────────────────────────╮\n" +
+            " 🌸 *Cherry petals are dancing in the wind...* 🌸\n" +
+            " 💖 *A new update has bloomed beautifully!* 💖\n" +
+            "╰──────────────────────────────╯",
+          fields: [
+            {
+              name: "🌸 Patch Notes",
+              value:
+                "```md\n" +
+                "[ 🌷 MINECRAFT UPDATE 🌷 ]\n" +
+                "──────────────────────────────────────────────\n" +
+                `${message}\n` +
+                "```"
+            }
+          ],
+          footer: { text: "Made with 💕 by *Toka* • Minecraft Bot 🌸" },
+          timestamp: new Date()
+        }
+      ]
+    };
+
+    const res = await fetch(WEBHOOK_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+
+    if (!res.ok) {
+      console.error("Discord webhook error:", await res.text());
+      return { statusCode: 500, body: "Failed to send webhook" };
+    }
+
+    console.log("Announcement sent with Patch Notes:", message);
+    return {
+      statusCode: 200,
+      body: JSON.stringify({ success: true, message: "Announcement sent!" })
+    };
+  } catch (err) {
+    console.error("Webhook exception:", err);
+    return { statusCode: 500, body: "Failed to send webhook" };
+  }
+}
