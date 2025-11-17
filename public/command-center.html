@@ -47,16 +47,18 @@ h2#greeting {
 }
 
 #announceForm textarea {
-  width: 100%;
+  width: calc(100% - 24px); /* accounts for padding so it stays inside panel */
+  height: 50px;             /* slightly smaller */
   padding: 12px;
   border-radius: 8px;
   border: 1px solid #444;
   background-color: #1e1e1e;
   color: #f0f0f0;
-  resize: vertical;
+  resize: none;             /* disabled resizing */
   font-size: 14px;
   font-family: monospace;
   margin-bottom: 10px;
+  box-sizing: border-box;   /* ensures width includes padding/border */
 }
 
 #announceForm button {
@@ -83,7 +85,7 @@ h2#greeting {
   <div class="panel">
     <div class="panel-title">Send Announcement</div>
     <form id="announceForm">
-      <textarea id="message" rows="6" placeholder="Enter your announcement..." required></textarea>
+      <textarea id="message" rows="2" placeholder="Enter your announcement..." required></textarea>
       <button type="submit">Send</button>
     </form>
   </div>
