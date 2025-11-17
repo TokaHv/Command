@@ -36,17 +36,18 @@ form.addEventListener("submit", async e => {
   const discordId = document.getElementById("discordId").value;
 
   try {
-    const res = await fetch("/.netlify/functions/check-whitelist", {
+    // Updated backend route for Node.js server
+    const res = await fetch("/check-whitelist", {
       method: "POST",
       headers: {"Content-Type": "application/json"},
-      body: JSON.stringify({discordId})
+      body: JSON.stringify({id: discordId}) // match backend property
     });
 
     const data = await res.json();
 
     if (data.allowed) {
       localStorage.setItem("discordId", discordId);
-      localStorage.setItem("discordUsername", data.username);
+      localStorage.setItem("discordUsername", data.username || "Unknown");
       window.location.href = "/command-center.html";
     } else {
       alert("Your Discord ID is not whitelisted.");
