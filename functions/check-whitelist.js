@@ -1,20 +1,30 @@
+import express from "express";
 import fs from "fs";
 import path from "path";
 
-export async function handler(event) {
-  if (event.httpMethod !== "POST") {
-    return { statusCode: 405, body: "Method Not Allowed" };
-  }
+const app = express();
+const port = process.env.PORT || 3000;
 
-  const { discordId } = JSON.parse(event.body || "{}");
+app.use(express.json()); // parse JSON body
 
-  const whitelistPath = path.join(process.cwd(), "whitelist.json");
+// POST /check-whitelist route
+app.post("/check-whitelist", (req, res) => {
+  const { id: discordId } = req.body; // frontend sends {id: discordId}
+
+  const whitelistPath = path.join(process.cwd(), "functions", "whitelist-check.json");
   const whitelistData = JSON.parse(fs.readFileSync(whitelistPath, "utf8"));
 
   const user = whitelistData.allowedIds.find(u => u.id === discordId);
 
-  return {
-    statusCode: 200,
-    body: JSON.stringify({ allowed: !!user, username: user ? user.username : null }),
-  };
-}
+  res.json({ allowed: !!user, username: user ? user.username : null });
+});
+
+// POST /announce route (your existing announce.js logic)
+app.post("/announce", (req, res) => {
+  const { message, discordId } = req.body;
+  console.log(`Announcement from ${discordId}: ${message}`);
+  // Here you can add your Discord webhook sending logic
+  res.json({ success: true, message: "Announcement sent!" });
+});
+
+app.listen(port, () => console.log(`Server running on port ${port}`));
