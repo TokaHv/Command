@@ -48,18 +48,18 @@ h2#greeting {
 
 #announceForm textarea {
   width: 100%;
-  min-height: 100px; /* normal size */
-  max-height: 200px; /* will grow only to this height */
-  padding: 12px;
+  height: 50px; /* smaller height */
+  padding: 8px;
   border-radius: 8px;
   border: 1px solid #444;
   background-color: #1e1e1e;
   color: #f0f0f0;
-  resize: none; /* no manual resizing */
+  resize: none; /* cannot manually resize */
   font-size: 14px;
   font-family: monospace;
   margin-bottom: 10px;
-  overflow-y: auto; /* scroll if too much text */
+  box-sizing: border-box;
+  overflow-y: auto;
 }
 
 #announceForm button {
@@ -106,12 +106,6 @@ document.getElementById("greeting").textContent = `Hello, ${username}!`;
 const form = document.getElementById("announceForm");
 const textarea = document.getElementById("message");
 
-// Auto-expand textarea as you type
-textarea.addEventListener("input", () => {
-  textarea.style.height = "auto"; // reset height
-  textarea.style.height = Math.min(textarea.scrollHeight, 200) + "px"; // grow but max 200px
-});
-
 // Allow Enter to submit (Shift+Enter for new line)
 textarea.addEventListener("keydown", function(e) {
   if (e.key === "Enter" && !e.shiftKey) {
@@ -136,7 +130,6 @@ form.addEventListener("submit", async e => {
       const data = await res.json();
       alert(data.message || "Announcement sent!");
       form.reset();
-      textarea.style.height = "100px"; // reset to normal size after sending
     } else {
       const error = await res.json();
       alert(error.error || "Failed to send announcement.");
