@@ -12,7 +12,6 @@ body {
   margin: 0;
   padding: 0;
 }
-
 .container {
   max-width: 700px;
   margin: 50px auto;
@@ -21,31 +20,26 @@ body {
   border-radius: 12px;
   box-shadow: 0 0 20px rgba(0,0,0,0.5);
 }
-
 h1 {
   text-align: center;
   margin-bottom: 5px;
 }
-
 h2#greeting {
   text-align: center;
   font-weight: normal;
   margin-bottom: 30px;
 }
-
 .panel {
   background-color: #2a2a2a;
   padding: 20px;
   border-radius: 10px;
   margin-bottom: 20px;
 }
-
 .panel-title {
   font-size: 18px;
   font-weight: bold;
   margin-bottom: 10px;
 }
-
 #announceForm textarea {
   width: 100%;
   padding: 12px;
@@ -58,7 +52,6 @@ h2#greeting {
   font-family: monospace;
   margin-bottom: 10px;
 }
-
 #announceForm button {
   background-color: #f8bbd0;
   color: #121212;
@@ -69,7 +62,6 @@ h2#greeting {
   font-weight: bold;
   transition: background-color 0.2s;
 }
-
 #announceForm button:hover {
   background-color: #f48fb1;
 }
@@ -114,7 +106,8 @@ form.addEventListener("submit", async e => {
   const msg = textarea.value;
 
   try {
-    const res = await fetch("/.netlify/functions/announce", {
+    // Updated backend route
+    const res = await fetch("/announce", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ message: msg, discordId })
