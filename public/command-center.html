@@ -47,18 +47,19 @@ h2#greeting {
 }
 
 #announceForm textarea {
-  width: calc(100% - 24px); /* accounts for padding so it stays inside panel */
-  height: 50px;             /* slightly smaller */
+  width: 100%;
+  min-height: 100px; /* normal size */
+  max-height: 200px; /* will grow only to this height */
   padding: 12px;
   border-radius: 8px;
   border: 1px solid #444;
   background-color: #1e1e1e;
   color: #f0f0f0;
-  resize: none;             /* disabled resizing */
+  resize: none; /* no manual resizing */
   font-size: 14px;
   font-family: monospace;
   margin-bottom: 10px;
-  box-sizing: border-box;   /* ensures width includes padding/border */
+  overflow-y: auto; /* scroll if too much text */
 }
 
 #announceForm button {
@@ -85,7 +86,7 @@ h2#greeting {
   <div class="panel">
     <div class="panel-title">Send Announcement</div>
     <form id="announceForm">
-      <textarea id="message" rows="2" placeholder="Enter your announcement..." required></textarea>
+      <textarea id="message" placeholder="Enter your announcement..." required></textarea>
       <button type="submit">Send</button>
     </form>
   </div>
@@ -104,6 +105,12 @@ document.getElementById("greeting").textContent = `Hello, ${username}!`;
 
 const form = document.getElementById("announceForm");
 const textarea = document.getElementById("message");
+
+// Auto-expand textarea as you type
+textarea.addEventListener("input", () => {
+  textarea.style.height = "auto"; // reset height
+  textarea.style.height = Math.min(textarea.scrollHeight, 200) + "px"; // grow but max 200px
+});
 
 // Allow Enter to submit (Shift+Enter for new line)
 textarea.addEventListener("keydown", function(e) {
@@ -129,6 +136,7 @@ form.addEventListener("submit", async e => {
       const data = await res.json();
       alert(data.message || "Announcement sent!");
       form.reset();
+      textarea.style.height = "100px"; // reset to normal size after sending
     } else {
       const error = await res.json();
       alert(error.error || "Failed to send announcement.");
