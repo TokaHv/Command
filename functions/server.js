@@ -57,4 +57,9 @@ app.get("/command-center.html", (req, res) => {
   res.sendFile(path.join(publicPath, "command-center.html"));
 });
 
+// Health check endpoint for uptime monitoring
+app.get("/health", (req, res) => {
+  res.status(200).send("Server is alive!");
+});
+
 app.listen(port, () => console.log(`Server running on port ${port}`));
