@@ -33,14 +33,14 @@ const form = document.getElementById("loginForm");
 
 form.addEventListener("submit", async e => {
   e.preventDefault();
-  const discordId = document.getElementById("discordId").value;
+  const discordId = document.getElementById("discordId").value.trim(); // remove extra spaces
 
   try {
-    // Updated backend route for Node.js server
+    // Updated backend route for Express server
     const res = await fetch("/check-whitelist", {
       method: "POST",
-      headers: {"Content-Type": "application/json"},
-      body: JSON.stringify({id: discordId}) // match backend property
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: discordId }) // match server.js property
     });
 
     const data = await res.json();

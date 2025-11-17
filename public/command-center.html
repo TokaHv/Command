@@ -12,6 +12,7 @@ body {
   margin: 0;
   padding: 0;
 }
+
 .container {
   max-width: 700px;
   margin: 50px auto;
@@ -20,26 +21,31 @@ body {
   border-radius: 12px;
   box-shadow: 0 0 20px rgba(0,0,0,0.5);
 }
+
 h1 {
   text-align: center;
   margin-bottom: 5px;
 }
+
 h2#greeting {
   text-align: center;
   font-weight: normal;
   margin-bottom: 30px;
 }
+
 .panel {
   background-color: #2a2a2a;
   padding: 20px;
   border-radius: 10px;
   margin-bottom: 20px;
 }
+
 .panel-title {
   font-size: 18px;
   font-weight: bold;
   margin-bottom: 10px;
 }
+
 #announceForm textarea {
   width: 100%;
   padding: 12px;
@@ -52,6 +58,7 @@ h2#greeting {
   font-family: monospace;
   margin-bottom: 10px;
 }
+
 #announceForm button {
   background-color: #f8bbd0;
   color: #121212;
@@ -62,6 +69,7 @@ h2#greeting {
   font-weight: bold;
   transition: background-color 0.2s;
 }
+
 #announceForm button:hover {
   background-color: #f48fb1;
 }
@@ -85,6 +93,7 @@ h2#greeting {
 const discordId = localStorage.getItem("discordId");
 const username = localStorage.getItem("discordUsername");
 
+// Redirect if not logged in
 if (!discordId || !username) {
   window.location.href = "/index.html";
 }
@@ -94,6 +103,7 @@ document.getElementById("greeting").textContent = `Hello, ${username}!`;
 const form = document.getElementById("announceForm");
 const textarea = document.getElementById("message");
 
+// Allow Enter to submit (Shift+Enter for new line)
 textarea.addEventListener("keydown", function(e) {
   if (e.key === "Enter" && !e.shiftKey) {
     e.preventDefault();
@@ -103,10 +113,10 @@ textarea.addEventListener("keydown", function(e) {
 
 form.addEventListener("submit", async e => {
   e.preventDefault();
-  const msg = textarea.value;
+  const msg = textarea.value.trim();
+  if (!msg) return;
 
   try {
-    // Updated backend route
     const res = await fetch("/announce", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -118,7 +128,8 @@ form.addEventListener("submit", async e => {
       alert(data.message || "Announcement sent!");
       form.reset();
     } else {
-      alert("Failed to send announcement.");
+      const error = await res.json();
+      alert(error.error || "Failed to send announcement.");
     }
   } catch (err) {
     console.error(err);
