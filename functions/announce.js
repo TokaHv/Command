@@ -1,20 +1,27 @@
+import express from "express";
+import fetch from "node-fetch"; // install with npm i node-fetch
+import cors from "cors";
+
+const app = express();
+const port = process.env.PORT || 3000;
+
+app.use(cors());
+app.use(express.json());
+
 const WEBHOOK_URL = "https://discord.com/api/webhooks/1434522950404407307/xMeCEonmw4Chm357er5EAH9hjS6VwSgy79xmAQwDyEm6_wkE_rkoBjzIer36CaPb0IG8";
 const roleId = "1434522137498095757"; // @Minecrafter role
 
-export async function handler(event) {
-  if (event.httpMethod !== "POST") {
-    return { statusCode: 405, body: "Method Not Allowed" };
-  }
-
-  const { message } = JSON.parse(event.body || "{}");
+// POST /announce route
+app.post("/announce", async (req, res) => {
+  const { message } = req.body;
 
   if (!message) {
-    return { statusCode: 400, body: "Message required" };
+    return res.status(400).json({ error: "Message required" });
   }
 
   try {
     const payload = {
-      content: `<@&${roleId}>`, // role ping
+      content: `<@&${roleId}>`,
       embeds: [
         {
           title: "🌸🌷  ｍｉｎｅｃｒａｆｔ  ｕｐｄａｔｅ • 🌷🌸",
@@ -41,24 +48,24 @@ export async function handler(event) {
       ]
     };
 
-    const res = await fetch(WEBHOOK_URL, {
+    const response = await fetch(WEBHOOK_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload)
     });
 
-    if (!res.ok) {
-      console.error("Discord webhook error:", await res.text());
-      return { statusCode: 500, body: "Failed to send webhook" };
+    if (!response.ok) {
+      console.error("Discord webhook error:", await response.text());
+      return res.status(500).json({ error: "Failed to send webhook" });
     }
 
     console.log("Announcement sent with Patch Notes:", message);
-    return {
-      statusCode: 200,
-      body: JSON.stringify({ success: true, message: "Announcement sent!" })
-    };
+    res.json({ success: true, message: "Announcement sent!" });
   } catch (err) {
     console.error("Webhook exception:", err);
-    return { statusCode: 500, body: "Failed to send webhook" };
+    res.status(500).json({ error: "Failed to send webhook" });
   }
-}
+});
+
+// Start server
+app.listen(port, () => console.log(`Server running on port ${port}`));
